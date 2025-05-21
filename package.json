@@ -1,0 +1,19 @@
+{
+  "name": "patterns-soc-opt",
+  "version": "1.0.0",
+  "main": "task.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "report": "ts-node --project ./week-1/tsconfig.json week-1/run.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@types/node": "^22.15.18",
+    "typescript": "^5.8.3"
+  },
+  "devDependencies": {
+    "tsconfig-paths": "^4.2.0"
+  }
+}
