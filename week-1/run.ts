@@ -1,7 +1,5 @@
-import { parseNumber } from "./utils";
-import { TableConfig } from "./types";
-import { CSVParser } from "./CSVParser";
-import { Table } from "./Table";
+import { type TableConfig, CSVParser, Table } from "core";
+import { parseNumber } from "utils";
 import fs from "node:fs";
 import { argv } from "node:process";
 
