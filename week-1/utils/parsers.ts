@@ -9,12 +9,12 @@ export function parseNumber(v: unknown) {
   return Number.isFinite(_v) ? _v : 0;
 }
 
-export function toString(v: string | number | undefined) {
-  if (typeof v === "string") return v;
+export function toString(primitive: string | number | undefined) {
+  if (typeof primitive === "string") return primitive;
 
-  if (typeof v === "undefined") return "";
+  if (typeof primitive === "undefined") return "";
 
-  if (Number.isFinite(v)) return v.toString();
+  if (Number.isFinite(primitive)) return primitive.toString();
 
   return "";
 }

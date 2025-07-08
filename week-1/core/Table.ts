@@ -14,24 +14,29 @@ export class Table {
 
   #body: ParsedRow[];
 
-  #totalRow: number[];
+  /**
+   * Row with total values, min/max, etc
+   */
+  #aggregateRow: number[];
 
   renderer: Presenter = logger;
 
   constructor(config: TableConfig, body: TableBody) {
     this.#config = config;
     this.#body = [];
+    this.#aggregateRow = [];
 
-    const { columns } = config;
+    this.#parseBody(body);
+  }
 
-    this.#totalRow = [];
+  // Normalize values according to the table config
+  #parseBody(body: TableBody) {
+    const { columns } = this.#config;
 
-    // Normalize values according to the table config
     for (const row of body) {
       const parsedRow: ParsedRow = [];
 
-      let colIndex = 0;
-      while (colIndex < columns.length) {
+      for (let colIndex = 0; colIndex < columns.length; colIndex++) {
         const col = columns[colIndex];
         const value = col.getValue
           ? undefined
@@ -45,13 +50,11 @@ export class Table {
             "Value has to be number for max formula"
           );
 
-          this.#totalRow[colIndex] ??= 0;
-          if (this.#totalRow[colIndex] < value) {
-            this.#totalRow[colIndex] = value;
+          this.#aggregateRow[colIndex] ??= 0;
+          if (this.#aggregateRow[colIndex] < value) {
+            this.#aggregateRow[colIndex] = value;
           }
         }
-
-        colIndex++;
       }
 
       this.#body.push(parsedRow);
@@ -86,15 +89,13 @@ export class Table {
     const { columns } = this.#config;
 
     let formattedRow = "";
-    let colIndex = 0;
-    while (colIndex < columns.length) {
+    for (let colIndex = 0; colIndex < columns.length; colIndex++) {
       const col = columns[colIndex];
       const value = col.getValue
-        ? col.getValue(row, this.#totalRow)
+        ? col.getValue(row, this.#aggregateRow)
         : row[colIndex];
 
       formattedRow += this.#renderCell(col, value);
-      colIndex++;
     }
 
     return formattedRow;
@@ -102,9 +103,10 @@ export class Table {
 
   #renderBody() {
     const body = [];
-    let rowIndex = 0;
-    while (rowIndex < this.#body.length) {
-      body.push(this.#renderRow(this.#body[rowIndex++]));
+
+    for (const row of this.#body) {
+      const formattedRow = this.#renderRow(row);
+      body.push(formattedRow);
     }
 
     this.renderer.render(body.join("\n"));
@@ -112,15 +114,13 @@ export class Table {
 
   #sort() {
     const { columns } = this.#config;
-    let colIndex = 0;
-    while (colIndex < columns.length) {
+    
+    for (let colIndex = 0; colIndex < columns.length; colIndex++) {
       const col = columns[colIndex];
 
       if (col.sort) {
         this.#sortBy(col, colIndex);
       }
-
-      colIndex++;
     }
   }
 
@@ -128,9 +128,9 @@ export class Table {
     asserts(!!col.sort, "Sort has to be enabled");
 
     const getValue = (row: ParsedRow) =>
-      col.getValue ? col.getValue(row, this.#totalRow) : row[colIndex];
+      col.getValue ? col.getValue(row, this.#aggregateRow) : row[colIndex];
 
-    this.#body = [...this.#body].sort((rowA, rowB) => {
+    this.#body.sort((rowA, rowB) => {
       const valueA = getValue(rowA);
       const valueB = getValue(rowB);
 
@@ -144,5 +144,15 @@ export class Table {
   render() {
     this.#sort();
     this.#renderBody();
+  }
+  static fromCSV(str: string, config: TableConfig, skipRowsFromTop = 0) {
+    const lines = str.split("\n");
+    const rows: string[][] = [];
+
+    for (const line of lines) {
+      rows.push(line.split(","));
+    }
+
+    return new Table(config, rows.slice(skipRowsFromTop));
   }
 }

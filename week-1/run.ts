@@ -1,4 +1,4 @@
-import { type TableConfig, CSVParser, Table } from "core";
+import { type TableConfig, Table } from "core";
 import { parseNumber } from "utils";
 import fs from "node:fs";
 import { argv } from "node:process";
@@ -26,7 +26,5 @@ const config = {
 fs.readFile(argv[2], { encoding: "utf-8" }, (err, data) => {
   if (err) throw err;
 
-  const result = new CSVParser().parse(data);
-
-  new Table(config, result.slice(1)).render();
+  Table.fromCSV(data, config, 1).render();
 });
