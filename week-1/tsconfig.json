@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "baseUrl": "./",
+    "paths": {
+      "utils": ["./utils"],
+      "core": ["./core"]
+    }
+  },
+  "include": ["**/*.ts"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
+}

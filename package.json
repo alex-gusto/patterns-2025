@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "main": "task.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "report": "ts-node --project ./week-1/tsconfig.json week-1/run.ts"
+    "report": "ts-node --project ./week-1/tsconfig.json week-1/run.ts ./week-1/source/original.txt"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@types/node": "^22.15.18",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "devDependencies": {
